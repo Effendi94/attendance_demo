@@ -1,7 +1,9 @@
 import 'package:attendance/core.dart';
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final Controller controller = Get.put(Controller());
+
+  MyHomePage({Key? key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -24,20 +26,36 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(children: [
-        Center(
-          child: ElevatedButton(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: ElevatedButton(
+              child: Text(
+                'Master Location',
+                style: TextStyles.textButton,
+              ),
+              onPressed: () {
+                // controller.getCurrentLocation();
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
               child: Text(
                 'Attendance',
                 style: TextStyles.textButton,
               ),
               onPressed: () {
                 Get.to(
-                  () => const AttendancePage(),
+                  () => AttendancePage(),
                 );
-              }),
-        )
-      ]),
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

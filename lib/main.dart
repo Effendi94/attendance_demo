@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         primarySwatch: Colors.blue,
       ),
       routes: <String, WidgetBuilder>{
-        "HOME": (BuildContext context) => const MyHomePage(),
+        "HOME": (BuildContext context) => MyHomePage(),
       },
       home: const Splashscreen(),
     );

@@ -48,7 +48,7 @@ class SplashscreenState extends State<Splashscreen> {
 
   Future<void> _redirect() async {
     Future.delayed(const Duration(milliseconds: 1500), () async {
-      return Get.offAll(() => const MyHomePage());
+      return Get.offAll(() => MyHomePage());
     });
   }
 

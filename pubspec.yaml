@@ -30,9 +30,12 @@ dependencies:
     cupertino_icons: ^1.0.2
     flutter:
         sdk: flutter
+    flutter_plugin_android_lifecycle: ^2.0.6
+    geolocator: ^8.2.1
     get: ^4.6.5
     google_maps_flutter: ^2.1.7
     package_info_plus: ^1.4.2
+    plugin_platform_interface: ^2.1.2
     shared_preferences: ^2.0.15
     sqflite: ^2.0.2+1
 
