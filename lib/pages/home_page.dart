@@ -1,7 +1,10 @@
 import 'package:attendance/core.dart';
+import 'package:restart_app/restart_app.dart';
 
 class MyHomePage extends StatelessWidget {
   final HomeGetxController controller = Get.put(HomeGetxController());
+  final OfficeLocationGetxController controller2 =
+      Get.put(OfficeLocationGetxController());
 
   MyHomePage({Key? key}) : super(key: key);
 
@@ -18,6 +21,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           "Flutter Attendance Demo",
           style: TextStyle(
@@ -37,7 +41,9 @@ class MyHomePage extends StatelessWidget {
                 style: TextStyles.textButton,
               ),
               onPressed: () {
-                // controller.getCurrentLocation();
+                Get.to(
+                  () => OfficeLocationPage(),
+                );
               },
             ),
           ),
@@ -50,6 +56,65 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 Get.to(
                   () => AttendancePage(),
+                );
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: Text(
+                'Clear Cache',
+                style: TextStyles.textButton,
+              ),
+              onPressed: () {
+                Get.defaultDialog(
+                  title: 'Info',
+                  titleStyle: TextStyles.title,
+                  content: Text(
+                    "Are you want to clear cache ? \nThe app will restarted",
+                    style: TextStyles.subTitle,
+                  ),
+                  confirm: ElevatedButton(
+                    onPressed: () {
+                      clearStorage();
+                      Restart.restartApp();
+                    },
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                        fontFamily: robotoSemiBold,
+                        color: MyColors.white,
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(kBorderRadiusNormal),
+                        ),
+                      ),
+                    ),
+                  ),
+                  cancel: ElevatedButton(
+                    onPressed: Get.back,
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontFamily: robotoSemiBold,
+                        color: MyColors.white,
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(MyColors.danger),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(kBorderRadiusNormal),
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
             ),

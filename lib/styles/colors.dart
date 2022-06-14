@@ -6,6 +6,11 @@ class MyColors {
   static Color white = const Color(0xFFF5FFFA);
   static Color black = const Color(0xFF28282B);
   static Color grey = const Color(0xFFB2BEB5);
+  // static Color grey = const Color(0xFFf2f2f2);
+  static Color grey100 = const Color(0xFFF5F5F5);
+  static Color grey200 = const Color(0xFFEEEEEE);
+  static Color grey300 = const Color(0xFFE0E0E0);
+  static Color grey400 = const Color(0xFFBDBDBD);
   static Color info = const Color(0xFF5BC0DE);
   static Color warning = const Color(0xFFF0AD4E);
   static Color success = const Color(0xFF5CB85C);

@@ -19,23 +19,11 @@ class SplashscreenState extends State<Splashscreen> {
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
       ));
-
+      debugPrint('-------Save Common Data--------');
+      insertCommonData();
       _getAppInfo();
-      _redirect();
+      _checkLogin();
     });
-  }
-
-  double getProportionateScreenHeight(double inputHeight) {
-    double screenHeight = Get.height;
-    // 812 is the layout height that designer use
-    return (inputHeight / 812.0) * screenHeight;
-  }
-
-// Get the proportionate height as per screen size
-  double getProportionateScreenWidth(double inputWidth) {
-    double screenWidth = Get.width;
-    // 375 is the layout width that designer use
-    return (inputWidth / 375.0) * screenWidth;
   }
 
   Future<void> _getAppInfo() async {
@@ -46,9 +34,42 @@ class SplashscreenState extends State<Splashscreen> {
     });
   }
 
-  Future<void> _redirect() async {
+  Future<void> insertCommonData() async {
+    try {
+      await AttendanceDatabase().batchStart();
+      await TableUser().upsertAll(listCommonUser);
+      await TableLocation().upsertAll(commonLocation);
+      await AttendanceDatabase().batchCommit();
+      debugPrint('-------Common Data Saved--------');
+    } catch (e) {
+      AttendanceDatabase().batchRollback();
+    }
+  }
+
+  Future<void> _checkLogin() async {
+    var authData = await auth.getAuthData();
     Future.delayed(const Duration(milliseconds: 1500), () async {
-      return Get.offAll(() => MyHomePage());
+      if (authData != null) {
+        var strDate = await auth.getLastLogin();
+        if (strDate != null) {
+          var dateLastLogin = DateTime.parse(strDate).toLocal();
+          var dateUtc = DateTime.now().toUtc();
+          var dateLocal = dateUtc.toLocal();
+          if (dateLocal.difference(dateLastLogin).inDays > daysAutoLogOut) {
+            await auth.forceSignOut();
+            Get.snackbar(
+              "Info",
+              "Session expired",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.grey,
+            );
+            return Get.offAll(() => LoginPage());
+          }
+        }
+        return Get.offAll(() => MyHomePage());
+      } else {
+        return Get.offAll(() => LoginPage());
+      }
     });
   }
 

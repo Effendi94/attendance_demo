@@ -18,7 +18,7 @@ const SqfEntityTable tableUser = SqfEntityTable(
   // SqfEntity will set it to TableName automatically when the modelName (class name) is null
   // declare fields
   fields: [
-    SqfEntityField('name', DbType.text, isNotNull: false),
+    SqfEntityField('username', DbType.text, isNotNull: false),
     SqfEntityField('password', DbType.text, isNotNull: false),
   ],
 );
@@ -34,8 +34,8 @@ const SqfEntityTable tableLocation = SqfEntityTable(
   // declare fields
   fields: [
     SqfEntityField('desc', DbType.text, isNotNull: false),
-    SqfEntityField('longtitude', DbType.text, isNotNull: false),
-    SqfEntityField('latitude', DbType.text, isNotNull: false),
+    SqfEntityField('longtitude', DbType.real, isNotNull: false),
+    SqfEntityField('latitude', DbType.real, isNotNull: false),
     SqfEntityField('isActive', DbType.bool,
         defaultValue: false, isNotNull: false),
   ],
@@ -52,8 +52,8 @@ const SqfEntityTable tableAttendance = SqfEntityTable(
   // declare fields
   fields: [
     SqfEntityField('attendance_type', DbType.text, isNotNull: false),
-    SqfEntityField('longitude', DbType.text, isNotNull: false),
-    SqfEntityField('latitude', DbType.text, isNotNull: false),
+    SqfEntityField('longitude', DbType.real, isNotNull: false),
+    SqfEntityField('latitude', DbType.real, isNotNull: false),
     SqfEntityField('startedAt', DbType.datetime, isNotNull: false),
     SqfEntityField('endedAt', DbType.datetime, isNotNull: false),
     SqfEntityFieldRelationship(
@@ -73,7 +73,7 @@ const myDbModel = SqfEntityModel(
   databaseTables: [
     tableUser,
     tableLocation,
-    tableLocation,
+    tableAttendance,
   ],
   dbVersion: 1,
   defaultColumns: [

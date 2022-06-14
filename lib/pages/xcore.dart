@@ -3,3 +3,8 @@ export 'attendance_page.dart';
 export 'form_location_page.dart';
 export 'home_controller.dart';
 export 'attendance_getx_controller.dart';
+export 'office_location_page.dart';
+export 'office_location_getx_controller.dart';
+export 'login_getx_controller.dart';
+export 'login_page.dart';
+export 'google_map_component.dart';

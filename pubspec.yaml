@@ -27,6 +27,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+    community_material_icon: ^5.9.55
+    crypt: ^4.2.1
     cupertino_icons: ^1.0.2
     flutter:
         sdk: flutter
@@ -38,7 +40,9 @@ dependencies:
     package_info_plus: ^1.4.2
     path: ^1.8.0
     path_provider: ^2.0.11
+    permission_handler: ^9.2.0
     plugin_platform_interface: ^2.1.2
+    restart_app: ^1.1.0
     shared_preferences: ^2.0.15
     sqfentity: ^2.2.0+6
     sqfentity_gen: ^2.2.0+12

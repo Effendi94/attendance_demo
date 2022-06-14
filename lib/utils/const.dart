@@ -14,6 +14,16 @@ const String logoLight = 'assets/images/flutter-logo.png';
 // const String logoDarkNoText = 'assets/images/logo-dark-notext.png';
 // const String logoNoText = 'assets/images/logo-notext-transparent';
 
+// ------- Local Storage Key ---------
+const String appAuthDataKey = 'authData';
+const String appUserDataKey = "userData";
+const int daysAutoLogOut = 3;
+
+const double kBorderRadiusNormal = 15;
+
+const String startAttendanceType = 'Start Day';
+const String endAttendanceType = 'Start Day';
+
 // assets/fonts
 const String robotoRegular = "Roboto";
 const String robotoBold = "Roboto Bold";

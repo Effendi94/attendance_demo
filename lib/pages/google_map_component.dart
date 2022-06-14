@@ -1,0 +1,35 @@
+import 'dart:async';
+
+import 'package:attendance/core.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class GoogleMapComponent extends StatelessWidget {
+  final AttendanceGetxController controller = Get.find();
+  final Completer<GoogleMapController> gMapController = Completer();
+
+  GoogleMapComponent({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: Get.height * .35,
+      child: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+          target: LatLng(
+            controller.officePosition.value!.latitude,
+            controller.officePosition.value!.longitude,
+          ),
+          zoom: 14.4746,
+        ),
+        markers: Set<Marker>.of(controller.markers.values),
+        circles: Set<Circle>.of(controller.circles.values),
+        onMapCreated: (GoogleMapController controller) {
+          gMapController.complete(controller);
+        },
+        myLocationEnabled: true,
+        zoomControlsEnabled: false,
+      ),
+    );
+  }
+}
