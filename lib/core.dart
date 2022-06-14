@@ -10,3 +10,7 @@ export 'pages/xcore.dart';
 export 'utils/xcore.dart';
 
 export 'styles/xcore.dart';
+
+export 'models/xcore.dart';
+
+export 'providers/xcore.dart';

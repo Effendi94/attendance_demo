@@ -1,7 +1,7 @@
 import 'package:attendance/core.dart';
 
 class MyHomePage extends StatelessWidget {
-  final Controller controller = Get.put(Controller());
+  final HomeGetxController controller = Get.put(HomeGetxController());
 
   MyHomePage({Key? key}) : super(key: key);
 
@@ -33,7 +33,7 @@ class MyHomePage extends StatelessWidget {
           Center(
             child: ElevatedButton(
               child: Text(
-                'Master Location',
+                'Office Location',
                 style: TextStyles.textButton,
               ),
               onPressed: () {

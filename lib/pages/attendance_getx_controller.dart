@@ -1,19 +1,23 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:attendance/core.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 
-class Controller extends GetxController {
+class AttendanceGetxController extends GetxController {
   LocationSettings? locationSettings;
   LocationPermission? permission;
   bool? serviceEnabled;
-  Position? position;
+  var position = Rxn<Position>();
+
+  var countDownTimer = ''.obs;
+  var isStart = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     initLocation();
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => getCurrentTime());
     // stream();
   }
 
@@ -28,7 +32,7 @@ class Controller extends GetxController {
         }
       }
 
-      position = await Geolocator.getCurrentPosition(
+      position.value = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
       locationSettings = AndroidSettings(
@@ -59,5 +63,10 @@ class Controller extends GetxController {
           ? 'Unknown'
           : '${position.latitude.toString()}, ${position.longitude.toString()}');
     });
+  }
+
+  void getCurrentTime() {
+    String time = DateFormat("hh:mm:ss").format(now());
+    countDownTimer(time);
   }
 }

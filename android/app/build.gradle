@@ -21,6 +21,11 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def segmentsGMPKEY = localProperties.getProperty('segments.GMP_KEY')
+if (segmentsGMPKEY == null) {
+    segmentsGMPKEY = ''
+}
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -53,6 +58,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        // manifestPlaceholders = [gmpKey: segmentsGMPKEY]
     }
 
     signingConfigs {
@@ -88,3 +94,4 @@ dependencies {
 }
 
 // apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
