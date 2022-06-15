@@ -108,7 +108,7 @@ class AttendancePage extends StatelessWidget {
       ),
       body: Obx(
         () => controller.isLoading.value
-            ? const Loader(text: "Loading Map...")
+            ? const Loader(text: 'Loading map...')
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
@@ -137,11 +137,34 @@ class AttendancePage extends StatelessWidget {
                     _buildButton(context),
                     const SizedBox(height: 20),
                     GoogleMapComponent(),
+                    // Obx(
+                    //   () => controller.isLoading.value
+                    //       ? _buildShimmer()
+                    //       :
+                    // GoogleMapComponent(
+                    //     latitude: controller.officePosition.value!.latitude,
+                    //     longitude: controller.officePosition.value!.longitude,
+                    //     markers: controller.markers,
+                    //     circles: controller.circles,
+                    //   ),
+                    // ),
                     _attendanceHistoryTitle(),
                     _attendanceHistory(),
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildShimmer() {
+    return Shimmer.fromColors(
+      baseColor: MyColors.shimmerBaseColor,
+      highlightColor: MyColors.shimmerhighlightColor,
+      child: Container(
+        height: Get.height * .35,
+        width: double.infinity,
+        color: MyColors.white,
       ),
     );
   }

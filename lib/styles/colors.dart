@@ -23,4 +23,8 @@ class MyColors {
   static Color kTextLightColor = const Color(0xFF7286A5);
   static Color kSecondaryColor = const Color(0xFF979797);
   static Color kPrimaryLightColor = const Color(0xFFF1E6FF);
+
+  // Shimmer
+  static Color shimmerBaseColor = Colors.grey.shade300;
+  static Color shimmerhighlightColor = Colors.grey.shade100;
 }

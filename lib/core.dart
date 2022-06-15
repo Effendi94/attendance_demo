@@ -1,6 +1,8 @@
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
 export 'package:flutter_dotenv/flutter_dotenv.dart';
+export 'package:shimmer/shimmer.dart';
+export 'package:community_material_icon/community_material_icon.dart';
 
 export 'package:get/get.dart';
 

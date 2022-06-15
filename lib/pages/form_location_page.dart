@@ -105,14 +105,6 @@ class FormLocationPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Note : Map place picker requires billing to work',
-                style: TextStyle(
-                  fontFamily: robotoLight,
-                  color: MyColors.danger,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
                 'Office Name',
                 style: TextStyles.inputLabel,
               ),

@@ -46,6 +46,7 @@ dependencies:
     plugin_platform_interface: ^2.1.2
     restart_app: ^1.1.0
     shared_preferences: ^2.0.15
+    shimmer: ^2.0.0
     sqfentity: ^2.2.0+6
     sqfentity_gen: ^2.2.0+12
     sqflite: ^2.0.2+1

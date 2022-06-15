@@ -2,7 +2,6 @@ import 'package:attendance/core.dart';
 import 'package:attendance/widgets/bottom_loader.dart';
 import 'package:attendance/widgets/rounded_password_field.dart';
 import 'package:attendance/widgets/rounded_text_field.dart';
-import 'package:community_material_icon/community_material_icon.dart';
 
 class LoginPage extends StatelessWidget {
   final LoginGetxController controller = Get.put(LoginGetxController());

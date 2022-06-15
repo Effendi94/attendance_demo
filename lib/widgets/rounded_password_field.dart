@@ -1,6 +1,5 @@
 import 'package:attendance/core.dart';
 import 'package:attendance/widgets/text_field_container.dart';
-import 'package:community_material_icon/community_material_icon.dart';
 
 class RoundedPasswordField extends StatelessWidget {
   final String? hintText;

@@ -1,6 +1,5 @@
 import 'package:attendance/core.dart';
 import 'package:attendance/widgets/bottom_loader.dart';
-import 'package:community_material_icon/community_material_icon.dart';
 
 class OfficeLocationPage extends StatelessWidget {
   final OfficeLocationGetxController controller = Get.find();

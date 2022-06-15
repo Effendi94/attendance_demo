@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'dart:math' show asin, cos, sqrt;
 
@@ -21,6 +20,7 @@ class AttendanceGetxController extends GetxController {
   Set<Circle> circles = <Circle>{};
 
   var isLoading = true.obs;
+  var mapLoading = true.obs;
   var allowAttendance = true.obs;
   var user = TableUser();
 
@@ -37,6 +37,7 @@ class AttendanceGetxController extends GetxController {
     countDownTimer('');
     formattedTime('');
     isLoading(true);
+    mapLoading(true);
     allowAttendance(true);
     isStart(true);
     listAttendance.clear();
@@ -113,7 +114,6 @@ class AttendanceGetxController extends GetxController {
     final date = now().toUtc();
     final start = DateTime(date.year, date.month, date.day, 0, 0, 0);
     final end = DateTime(date.year, date.month, date.day, 23, 59, 59);
-    log('user id : ${user.id}');
     final dataList = await TableAttendance()
         .select()
         .usersId
@@ -124,7 +124,6 @@ class AttendanceGetxController extends GetxController {
         .top(2)
         .orderBy('attendance_at')
         .toList();
-    inspect(dataList);
     if (dataList.isNotEmpty) {
       listAttendance(dataList);
       if (listAttendance.isEmpty) {
