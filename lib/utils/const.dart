@@ -21,8 +21,8 @@ const int daysAutoLogOut = 3;
 
 const double kBorderRadiusNormal = 15;
 
-const String startAttendanceType = 'Start Day';
-const String endAttendanceType = 'Start Day';
+const String startAttendance = 'Start Day';
+const String endAttendance = 'End Day';
 
 // assets/fonts
 const String robotoRegular = "Roboto";

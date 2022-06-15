@@ -1,25 +1,27 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:math' show asin, cos, pi, sin, sqrt;
+
+import 'dart:math' show asin, cos, sqrt;
 
 import 'package:attendance/core.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AttendanceGetxController extends GetxController {
   LocationSettings? locationSettings;
+  var listAttendance = <TableAttendance>[].obs;
   var position = Rxn<LatLng>();
   var officePosition = Rxn<LatLng>();
 
   var countDownTimer = ''.obs;
   var formattedTime = ''.obs;
-  var isStart = false.obs;
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  Map<CircleId, Circle> circles = <CircleId, Circle>{};
+  var isStart = true.obs;
+  Set<Marker> markers = <Marker>{};
+  Set<Circle> circles = <Circle>{};
 
   var isLoading = true.obs;
+  var allowAttendance = true.obs;
   var user = TableUser();
 
   @override
@@ -31,14 +33,12 @@ class AttendanceGetxController extends GetxController {
   }
 
   Future<void> initFuture() async {
-    final userData = await auth.getUserData();
-
     isLoading(true);
+    user = await auth.getUserData();
     await getOfficeLocation();
     await initLocation();
-    // await getAttendance();
+    await getAttendance();
     isLoading(false);
-    user = userData;
   }
 
   Future<Position> getCurrentLocation() async {
@@ -47,38 +47,11 @@ class AttendanceGetxController extends GetxController {
     return result;
   }
 
-  Future<void> checkPermission() async {
-    var permission = await Permission.location.status;
-    if (permission.isDenied) {
-      permission = await Permission.location.request();
-      if (permission.isDenied) {
-        Get.defaultDialog(
-          title: "Info",
-          titleStyle: TextStyles.title,
-          content: Text(
-            "Location permission denied!",
-            style: TextStyles.subTitle,
-          ),
-          onConfirm: () {
-            Get.back();
-            Get.back();
-          },
-          textConfirm: "OK",
-          confirmTextColor: MyColors.white,
-        );
-      }
-    }
-  }
-
   Future<void> initLocation() async {
-    try {
-      await checkPermission().whenComplete(() async {
-        final pos = await getCurrentLocation();
-        position.value = LatLng(pos.latitude, pos.longitude);
-      });
-    } catch (e) {
-      // inspect(e);
-    }
+    await checkPermission().whenComplete(() async {
+      final pos = await getCurrentLocation();
+      position.value = LatLng(pos.latitude, pos.longitude);
+    });
   }
 
   Future<void> getOfficeLocation() async {
@@ -96,7 +69,7 @@ class AttendanceGetxController extends GetxController {
       final CircleId circleId = CircleId(circleIdVal);
 
       final circle = Circle(
-        circleId: CircleId(circleIdVal),
+        circleId: circleId,
         center: LatLng(
           officePosition.value!.latitude,
           officePosition.value!.longitude,
@@ -109,30 +82,51 @@ class AttendanceGetxController extends GetxController {
 
       final marker = Marker(
         markerId: markerId,
-        position: LatLng(
-          latitude + sin(data.id! * pi / 6.0) / 20.0,
-          longitude + cos(data.id! * pi / 6.0) / 20.0,
-        ),
+        position: LatLng(latitude, longitude),
         infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
         // onTap: () => _onMarkerTapped(markerId),
         // onDragEnd: (LatLng position) => _onMarkerDragEnd(markerId, position),
         // onDrag: (LatLng position) => _onMarkerDrag(markerId, position),
       );
-      markers[markerId] = marker;
-      circles[circleId] = circle;
+      markers.add(marker);
+      circles.add(circle);
     }
   }
 
   Future getAttendance() async {
+    listAttendance.clear();
+    allowAttendance(true);
     final date = now().toUtc();
-    final dataList =
-        await TableAttendance().select().createdAt.equals(date).toList();
+    final start = DateTime(date.year, date.month, date.day, 0, 0, 0);
+    final end = DateTime(date.year, date.month, date.day, 23, 59, 59);
+    log('user id : ${user.id}');
+    final dataList = await TableAttendance()
+        .select()
+        .usersId
+        .equals(user.id)
+        .and
+        .attendance_at
+        .between(start, end)
+        .top(2)
+        .orderBy('attendance_at')
+        .toList();
     inspect(dataList);
+    if (dataList.isNotEmpty) {
+      listAttendance(dataList);
+      if (listAttendance.isEmpty) {
+        isStart(true);
+      } else if (listAttendance.length == 1) {
+        isStart(false);
+      } else {
+        isStart(false);
+        allowAttendance(false);
+      }
+    }
   }
 
   Future<void> saveAttendance(TableAttendance tableAttendance) async {
-    inspect(tableAttendance);
-    // await tableAttendance.save();
+    final result = await tableAttendance.save();
+    if (result == null) throw "Failed save data";
   }
 
   String get getCurrentDate {
@@ -141,8 +135,8 @@ class AttendanceGetxController extends GetxController {
   }
 
   void setCurrentTime() {
-    DateTime time = now();
-    String timeString = DateFormat("hh:mm:ss").format(time);
+    DateTime time = now().toUtc().toLocal();
+    String timeString = DateFormat("H:mm:ss").format(time);
     countDownTimer(timeString);
     formattedTime(timeString);
   }

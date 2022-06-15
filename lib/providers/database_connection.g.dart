@@ -27,7 +27,7 @@ class TableTableUser extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'users';
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -54,7 +54,7 @@ class TableTableLocation extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'locations';
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -83,7 +83,7 @@ class TableTableAttendance extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'attendances';
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -92,9 +92,7 @@ class TableTableAttendance extends SqfEntityTableBase {
       SqfEntityFieldBase('attendance_type', DbType.text),
       SqfEntityFieldBase('longitude', DbType.real),
       SqfEntityFieldBase('latitude', DbType.real),
-      SqfEntityFieldBase('startedAt', DbType.datetime,
-          minValue: DateTime.parse('1900-01-01')),
-      SqfEntityFieldBase('endedAt', DbType.datetime,
+      SqfEntityFieldBase('attendance_at', DbType.datetime,
           minValue: DateTime.parse('1900-01-01')),
       SqfEntityFieldRelationshipBase(
           TableTableUser.getInstance, DeleteRule.CASCADE,
@@ -150,7 +148,7 @@ class TableUser extends TableBase {
     softDeleteActivated = false;
   }
   TableUser.withFields(
-      this.id, this.username, this.password, this.createdAt, this.updatedAt) {
+      this.username, this.password, this.createdAt, this.updatedAt) {
     _setDefaultValues();
   }
   TableUser.withId(
@@ -183,8 +181,6 @@ class TableUser extends TableBase {
               isUtc: true)
           : DateTime.tryParse(o['updatedAt'].toString());
     }
-
-    isSaved = true;
   }
   // FIELDS (TableUser)
   int? id;
@@ -192,7 +188,7 @@ class TableUser extends TableBase {
   String? password;
   DateTime? createdAt;
   DateTime? updatedAt;
-  bool? isSaved;
+
   // end FIELDS (TableUser)
 
 // COLLECTIONS & VIRTUALS (TableUser)
@@ -312,7 +308,6 @@ class TableUser extends TableBase {
   @override
   List<dynamic> toArgs() {
     return [
-      id,
       username,
       password,
       createdAt != null ? createdAt!.millisecondsSinceEpoch : null,
@@ -445,11 +440,8 @@ class TableUser extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> save({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableUser.insert(this, ignoreBatch);
-      if (saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableUser.insert(this, ignoreBatch);
     } else {
       await _mnTableUser.update(this);
     }
@@ -462,11 +454,9 @@ class TableUser extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableUser.insertOrThrow(this, ignoreBatch);
-      if (saveResult != null && saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableUser.insertOrThrow(this, ignoreBatch);
+
       isInsert = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
@@ -474,6 +464,16 @@ class TableUser extends TableBase {
     }
 
     return id;
+  }
+
+  /// saveAs TableUser. Returns a new Primary Key value of TableUser
+
+  /// <returns>Returns a new Primary Key value of TableUser
+  @override
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
+    id = null;
+
+    return save(ignoreBatch: ignoreBatch);
   }
 
   /// saveAll method saves the sent List<TableUser> as a bulk in one transaction
@@ -491,6 +491,11 @@ class TableUser extends TableBase {
           exclusive: exclusive,
           noResult: noResult,
           continueOnError: continueOnError);
+      for (int i = 0; i < tableusers.length; i++) {
+        if (tableusers[i].id == null) {
+          tableusers[i].id = result![i] as int;
+        }
+      }
     }
     return result!;
   }
@@ -573,7 +578,7 @@ class TableUser extends TableBase {
   @override
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
-    final msg =
+    const msg =
         'set useSoftDeleting:true in the table definition of [TableUser] to use this feature';
     throw UnimplementedError(msg);
   }
@@ -594,7 +599,6 @@ class TableUser extends TableBase {
   }
 
   void _setDefaultValues() {
-    isSaved = false;
     createdAt = createdAt ?? DateTime.now();
     updatedAt = updatedAt ?? DateTime.now();
   }
@@ -1133,7 +1137,7 @@ class TableLocation extends TableBase {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  TableLocation.withFields(this.id, this.desc, this.longtitude, this.latitude,
+  TableLocation.withFields(this.desc, this.longtitude, this.latitude,
       this.isActive, this.createdAt, this.updatedAt) {
     _setDefaultValues();
   }
@@ -1175,8 +1179,6 @@ class TableLocation extends TableBase {
               isUtc: true)
           : DateTime.tryParse(o['updatedAt'].toString());
     }
-
-    isSaved = true;
   }
   // FIELDS (TableLocation)
   int? id;
@@ -1186,7 +1188,7 @@ class TableLocation extends TableBase {
   bool? isActive;
   DateTime? createdAt;
   DateTime? updatedAt;
-  bool? isSaved;
+
   // end FIELDS (TableLocation)
 
   static const bool _softDeleteActivated = false;
@@ -1296,7 +1298,6 @@ class TableLocation extends TableBase {
   @override
   List<dynamic> toArgs() {
     return [
-      id,
       desc,
       longtitude,
       latitude,
@@ -1399,11 +1400,8 @@ class TableLocation extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> save({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableLocation.insert(this, ignoreBatch);
-      if (saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableLocation.insert(this, ignoreBatch);
     } else {
       await _mnTableLocation.update(this);
     }
@@ -1416,11 +1414,9 @@ class TableLocation extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableLocation.insertOrThrow(this, ignoreBatch);
-      if (saveResult != null && saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableLocation.insertOrThrow(this, ignoreBatch);
+
       isInsert = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
@@ -1428,6 +1424,16 @@ class TableLocation extends TableBase {
     }
 
     return id;
+  }
+
+  /// saveAs TableLocation. Returns a new Primary Key value of TableLocation
+
+  /// <returns>Returns a new Primary Key value of TableLocation
+  @override
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
+    id = null;
+
+    return save(ignoreBatch: ignoreBatch);
   }
 
   /// saveAll method saves the sent List<TableLocation> as a bulk in one transaction
@@ -1445,6 +1451,11 @@ class TableLocation extends TableBase {
           exclusive: exclusive,
           noResult: noResult,
           continueOnError: continueOnError);
+      for (int i = 0; i < tablelocations.length; i++) {
+        if (tablelocations[i].id == null) {
+          tablelocations[i].id = result![i] as int;
+        }
+      }
     }
     return result!;
   }
@@ -1518,7 +1529,7 @@ class TableLocation extends TableBase {
   @override
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
-    final msg =
+    const msg =
         'set useSoftDeleting:true in the table definition of [TableLocation] to use this feature';
     throw UnimplementedError(msg);
   }
@@ -1539,7 +1550,6 @@ class TableLocation extends TableBase {
   }
 
   void _setDefaultValues() {
-    isSaved = false;
     isActive = isActive ?? false;
     createdAt = createdAt ?? DateTime.now();
     updatedAt = updatedAt ?? DateTime.now();
@@ -2070,8 +2080,7 @@ class TableAttendance extends TableBase {
       this.attendance_type,
       this.longitude,
       this.latitude,
-      this.startedAt,
-      this.endedAt,
+      this.attendance_at,
       this.usersId,
       this.createdAt,
       this.updatedAt}) {
@@ -2079,12 +2088,10 @@ class TableAttendance extends TableBase {
     softDeleteActivated = false;
   }
   TableAttendance.withFields(
-      this.id,
       this.attendance_type,
       this.longitude,
       this.latitude,
-      this.startedAt,
-      this.endedAt,
+      this.attendance_at,
       this.usersId,
       this.createdAt,
       this.updatedAt) {
@@ -2095,8 +2102,7 @@ class TableAttendance extends TableBase {
       this.attendance_type,
       this.longitude,
       this.latitude,
-      this.startedAt,
-      this.endedAt,
+      this.attendance_at,
       this.usersId,
       this.createdAt,
       this.updatedAt) {
@@ -2118,17 +2124,11 @@ class TableAttendance extends TableBase {
     if (o['latitude'] != null) {
       latitude = double.tryParse(o['latitude'].toString());
     }
-    if (o['startedAt'] != null) {
-      startedAt = int.tryParse(o['startedAt'].toString()) != null
+    if (o['attendance_at'] != null) {
+      attendance_at = int.tryParse(o['attendance_at'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['startedAt'].toString())!)
-          : DateTime.tryParse(o['startedAt'].toString());
-    }
-    if (o['endedAt'] != null) {
-      endedAt = int.tryParse(o['endedAt'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['endedAt'].toString())!)
-          : DateTime.tryParse(o['endedAt'].toString());
+              int.tryParse(o['attendance_at'].toString())!)
+          : DateTime.tryParse(o['attendance_at'].toString());
     }
     usersId = int.tryParse(o['usersId'].toString());
 
@@ -2152,20 +2152,17 @@ class TableAttendance extends TableBase {
         ? TableUser.fromMap(o['tableUser'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (TableAttendance)
   int? id;
   String? attendance_type;
   double? longitude;
   double? latitude;
-  DateTime? startedAt;
-  DateTime? endedAt;
+  DateTime? attendance_at;
   int? usersId;
   DateTime? createdAt;
   DateTime? updatedAt;
-  bool? isSaved;
+
   // end FIELDS (TableAttendance)
 
 // RELATIONSHIPS (TableAttendance)
@@ -2205,23 +2202,14 @@ class TableAttendance extends TableBase {
     if (latitude != null || !forView) {
       map['latitude'] = latitude;
     }
-    if (startedAt != null) {
-      map['startedAt'] = forJson
-          ? startedAt!.toString()
+    if (attendance_at != null) {
+      map['attendance_at'] = forJson
+          ? attendance_at!.toString()
           : forQuery
-              ? startedAt!.millisecondsSinceEpoch
-              : startedAt;
-    } else if (startedAt != null || !forView) {
-      map['startedAt'] = null;
-    }
-    if (endedAt != null) {
-      map['endedAt'] = forJson
-          ? endedAt!.toString()
-          : forQuery
-              ? endedAt!.millisecondsSinceEpoch
-              : endedAt;
-    } else if (endedAt != null || !forView) {
-      map['endedAt'] = null;
+              ? attendance_at!.millisecondsSinceEpoch
+              : attendance_at;
+    } else if (attendance_at != null || !forView) {
+      map['attendance_at'] = null;
     }
     if (usersId != null) {
       map['usersId'] = forView
@@ -2270,23 +2258,14 @@ class TableAttendance extends TableBase {
     if (latitude != null || !forView) {
       map['latitude'] = latitude;
     }
-    if (startedAt != null) {
-      map['startedAt'] = forJson
-          ? startedAt!.toString()
+    if (attendance_at != null) {
+      map['attendance_at'] = forJson
+          ? attendance_at!.toString()
           : forQuery
-              ? startedAt!.millisecondsSinceEpoch
-              : startedAt;
-    } else if (startedAt != null || !forView) {
-      map['startedAt'] = null;
-    }
-    if (endedAt != null) {
-      map['endedAt'] = forJson
-          ? endedAt!.toString()
-          : forQuery
-              ? endedAt!.millisecondsSinceEpoch
-              : endedAt;
-    } else if (endedAt != null || !forView) {
-      map['endedAt'] = null;
+              ? attendance_at!.millisecondsSinceEpoch
+              : attendance_at;
+    } else if (attendance_at != null || !forView) {
+      map['attendance_at'] = null;
     }
     if (usersId != null) {
       map['usersId'] = forView
@@ -2334,12 +2313,10 @@ class TableAttendance extends TableBase {
   @override
   List<dynamic> toArgs() {
     return [
-      id,
       attendance_type,
       longitude,
       latitude,
-      startedAt != null ? startedAt!.millisecondsSinceEpoch : null,
-      endedAt != null ? endedAt!.millisecondsSinceEpoch : null,
+      attendance_at != null ? attendance_at!.millisecondsSinceEpoch : null,
       usersId,
       createdAt != null ? createdAt!.millisecondsSinceEpoch : null,
       updatedAt != null ? updatedAt!.millisecondsSinceEpoch : null
@@ -2353,8 +2330,7 @@ class TableAttendance extends TableBase {
       attendance_type,
       longitude,
       latitude,
-      startedAt != null ? startedAt!.millisecondsSinceEpoch : null,
-      endedAt != null ? endedAt!.millisecondsSinceEpoch : null,
+      attendance_at != null ? attendance_at!.millisecondsSinceEpoch : null,
       usersId,
       createdAt != null ? createdAt!.millisecondsSinceEpoch : null,
       updatedAt != null ? updatedAt!.millisecondsSinceEpoch : null
@@ -2465,11 +2441,8 @@ class TableAttendance extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> save({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableAttendance.insert(this, ignoreBatch);
-      if (saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableAttendance.insert(this, ignoreBatch);
     } else {
       await _mnTableAttendance.update(this);
     }
@@ -2482,11 +2455,9 @@ class TableAttendance extends TableBase {
   /// <returns>Returns id
   @override
   Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
-    if (id == null || id == 0 || !isSaved!) {
-      await _mnTableAttendance.insertOrThrow(this, ignoreBatch);
-      if (saveResult != null && saveResult!.success) {
-        isSaved = true;
-      }
+    if (id == null || id == 0) {
+      id = await _mnTableAttendance.insertOrThrow(this, ignoreBatch);
+
       isInsert = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
@@ -2494,6 +2465,16 @@ class TableAttendance extends TableBase {
     }
 
     return id;
+  }
+
+  /// saveAs TableAttendance. Returns a new Primary Key value of TableAttendance
+
+  /// <returns>Returns a new Primary Key value of TableAttendance
+  @override
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
+    id = null;
+
+    return save(ignoreBatch: ignoreBatch);
   }
 
   /// saveAll method saves the sent List<TableAttendance> as a bulk in one transaction
@@ -2511,6 +2492,11 @@ class TableAttendance extends TableBase {
           exclusive: exclusive,
           noResult: noResult,
           continueOnError: continueOnError);
+      for (int i = 0; i < tableattendances.length; i++) {
+        if (tableattendances[i].id == null) {
+          tableattendances[i].id = result![i] as int;
+        }
+      }
     }
     return result!;
   }
@@ -2521,14 +2507,15 @@ class TableAttendance extends TableBase {
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnTableAttendance.rawInsert(
-          'INSERT OR REPLACE INTO attendances (id, attendance_type, longitude, latitude, startedAt, endedAt, usersId, createdAt, updatedAt)  VALUES (?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO attendances (id, attendance_type, longitude, latitude, attendance_at, usersId, createdAt, updatedAt)  VALUES (?,?,?,?,?,?,?,?)',
           [
             id,
             attendance_type,
             longitude,
             latitude,
-            startedAt != null ? startedAt!.millisecondsSinceEpoch : null,
-            endedAt != null ? endedAt!.millisecondsSinceEpoch : null,
+            attendance_at != null
+                ? attendance_at!.millisecondsSinceEpoch
+                : null,
             usersId,
             createdAt != null ? createdAt!.millisecondsSinceEpoch : null,
             updatedAt != null ? updatedAt!.millisecondsSinceEpoch : null
@@ -2559,7 +2546,7 @@ class TableAttendance extends TableBase {
   Future<BoolCommitResult> upsertAll(List<TableAttendance> tableattendances,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnTableAttendance.rawInsertAll(
-        'INSERT OR REPLACE INTO attendances (id, attendance_type, longitude, latitude, startedAt, endedAt, usersId, createdAt, updatedAt)  VALUES (?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO attendances (id, attendance_type, longitude, latitude, attendance_at, usersId, createdAt, updatedAt)  VALUES (?,?,?,?,?,?,?,?)',
         tableattendances,
         exclusive: exclusive,
         noResult: noResult,
@@ -2586,7 +2573,7 @@ class TableAttendance extends TableBase {
   @override
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
-    final msg =
+    const msg =
         'set useSoftDeleting:true in the table definition of [TableAttendance] to use this feature';
     throw UnimplementedError(msg);
   }
@@ -2607,7 +2594,6 @@ class TableAttendance extends TableBase {
   }
 
   void _setDefaultValues() {
-    isSaved = false;
     createdAt = createdAt ?? DateTime.now();
     updatedAt = updatedAt ?? DateTime.now();
   }
@@ -2840,14 +2826,10 @@ class TableAttendanceFilterBuilder extends ConjunctionBase {
     return _latitude = _setField(_latitude, 'latitude', DbType.real);
   }
 
-  TableAttendanceField? _startedAt;
-  TableAttendanceField get startedAt {
-    return _startedAt = _setField(_startedAt, 'startedAt', DbType.datetime);
-  }
-
-  TableAttendanceField? _endedAt;
-  TableAttendanceField get endedAt {
-    return _endedAt = _setField(_endedAt, 'endedAt', DbType.datetime);
+  TableAttendanceField? _attendance_at;
+  TableAttendanceField get attendance_at {
+    return _attendance_at =
+        _setField(_attendance_at, 'attendance_at', DbType.datetime);
   }
 
   TableAttendanceField? _usersId;
@@ -3122,16 +3104,10 @@ class TableAttendanceFields {
         _fLatitude ?? SqlSyntax.setField(_fLatitude, 'latitude', DbType.real);
   }
 
-  static TableField? _fStartedAt;
-  static TableField get startedAt {
-    return _fStartedAt = _fStartedAt ??
-        SqlSyntax.setField(_fStartedAt, 'startedAt', DbType.datetime);
-  }
-
-  static TableField? _fEndedAt;
-  static TableField get endedAt {
-    return _fEndedAt =
-        _fEndedAt ?? SqlSyntax.setField(_fEndedAt, 'endedAt', DbType.datetime);
+  static TableField? _fAttendance_at;
+  static TableField get attendance_at {
+    return _fAttendance_at = _fAttendance_at ??
+        SqlSyntax.setField(_fAttendance_at, 'attendance_at', DbType.datetime);
   }
 
   static TableField? _fUsersId;

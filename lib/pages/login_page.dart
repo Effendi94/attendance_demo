@@ -41,6 +41,66 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+  void _viewHint() async {
+    dismissTextFieldFocus(Get.overlayContext!);
+    Get.defaultDialog(
+      title: "Login Hint",
+      content: Column(
+        children: List<Widget>.generate(
+          3,
+          (int idx) => Row(
+            children: [
+              Text(
+                '${idx + 1}.',
+                style: const TextStyle(
+                  fontFamily: robotoSemiBold,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                'user${idx + 1}',
+                style: const TextStyle(
+                  fontFamily: robotoSemiBold,
+                ),
+              ),
+              const SizedBox(width: 15),
+              Text(
+                'password${idx + 1}',
+                style: const TextStyle(
+                  fontFamily: robotoSemiBold,
+                ),
+              ),
+            ],
+          ),
+        ).toList(),
+        // children: [
+        // children: const [
+        //   Text(
+        //     '1.',
+        //     style: TextStyle(
+        //       fontFamily: robotoSemiBold,
+        //     ),
+        //   ),
+        //   SizedBox(width: 5),
+        //   Text(
+        //     'user1',
+        //     style: TextStyle(
+        //       fontFamily: robotoSemiBold,
+        //     ),
+        //   ),
+        //   SizedBox(width: 15),
+        //   Text(
+        //     'password1',
+        //     style: TextStyle(
+        //       fontFamily: robotoSemiBold,
+        //     ),
+        //   ),
+        // ],
+        // ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +209,14 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    TextButton(
+                      onPressed: _viewHint,
+                      child: Text(
+                        'Hint?',
+                        style: TextStyles.textButton,
+                      ),
+                    ),
                   ],
                 ),
               ),

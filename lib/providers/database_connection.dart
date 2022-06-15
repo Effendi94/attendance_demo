@@ -11,7 +11,7 @@ part 'database_connection.g.dart';
 const SqfEntityTable tableUser = SqfEntityTable(
   tableName: 'users',
   primaryKeyName: 'id',
-  primaryKeyType: PrimaryKeyType.integer_unique,
+  primaryKeyType: PrimaryKeyType.integer_auto_incremental,
   useSoftDeleting: false,
   // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
   modelName: 'tableUser',
@@ -26,7 +26,7 @@ const SqfEntityTable tableUser = SqfEntityTable(
 const SqfEntityTable tableLocation = SqfEntityTable(
   tableName: 'locations',
   primaryKeyName: 'id',
-  primaryKeyType: PrimaryKeyType.integer_unique,
+  primaryKeyType: PrimaryKeyType.integer_auto_incremental,
   useSoftDeleting: false,
   // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
   modelName: 'tableLocation',
@@ -44,7 +44,7 @@ const SqfEntityTable tableLocation = SqfEntityTable(
 const SqfEntityTable tableAttendance = SqfEntityTable(
   tableName: 'attendances',
   primaryKeyName: 'id',
-  primaryKeyType: PrimaryKeyType.integer_unique,
+  primaryKeyType: PrimaryKeyType.integer_auto_incremental,
   useSoftDeleting: false,
   // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
   modelName: 'tableAttendance',
@@ -54,8 +54,7 @@ const SqfEntityTable tableAttendance = SqfEntityTable(
     SqfEntityField('attendance_type', DbType.text, isNotNull: false),
     SqfEntityField('longitude', DbType.real, isNotNull: false),
     SqfEntityField('latitude', DbType.real, isNotNull: false),
-    SqfEntityField('startedAt', DbType.datetime, isNotNull: false),
-    SqfEntityField('endedAt', DbType.datetime, isNotNull: false),
+    SqfEntityField('attendance_at', DbType.datetime, isNotNull: false),
     SqfEntityFieldRelationship(
       parentTable: tableUser,
       relationType: RelationType.ONE_TO_MANY,
@@ -75,7 +74,7 @@ const myDbModel = SqfEntityModel(
     tableLocation,
     tableAttendance,
   ],
-  dbVersion: 1,
+  dbVersion: 2,
   defaultColumns: [
     SqfEntityField('createdAt', DbType.datetimeUtc,
         defaultValue: 'DateTime.now()'),

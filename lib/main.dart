@@ -2,6 +2,7 @@ import 'package:attendance/core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment = false;
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     // statusBarColor: MyColors.appPrimaryColor,

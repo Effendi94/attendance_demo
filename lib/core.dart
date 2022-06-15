@@ -1,5 +1,6 @@
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
+export 'package:flutter_dotenv/flutter_dotenv.dart';
 
 export 'package:get/get.dart';
 

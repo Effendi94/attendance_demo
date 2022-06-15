@@ -22,8 +22,8 @@ class GoogleMapComponent extends StatelessWidget {
           ),
           zoom: 14.4746,
         ),
-        markers: Set<Marker>.of(controller.markers.values),
-        circles: Set<Circle>.of(controller.circles.values),
+        markers: controller.markers,
+        circles: controller.circles,
         onMapCreated: (GoogleMapController controller) {
           gMapController.complete(controller);
         },
