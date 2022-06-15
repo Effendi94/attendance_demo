@@ -34,6 +34,11 @@ class AttendanceGetxController extends GetxController {
   }
 
   void initVariable() {
+    countDownTimer('');
+    formattedTime('');
+    isLoading(true);
+    allowAttendance(true);
+    isStart(true);
     listAttendance.clear();
     position(null);
     officePosition(null);
