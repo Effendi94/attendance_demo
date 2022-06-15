@@ -25,7 +25,7 @@ class LoginPage extends StatelessWidget {
         await controller.checkCredentials(
             usernameController.text, passController.text);
         Get.back();
-        Get.to(() => MyHomePage());
+        Get.offAll(() => MyHomePage());
       }
       controller.isLogin(false);
     } catch (e) {

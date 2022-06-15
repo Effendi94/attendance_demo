@@ -1,5 +1,6 @@
 import 'package:attendance/core.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:restart_app/restart_app.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({Key? key}) : super(key: key);
@@ -36,13 +37,38 @@ class SplashscreenState extends State<Splashscreen> {
 
   Future<void> insertCommonData() async {
     try {
-      await AttendanceDatabase().batchStart();
       await TableUser().upsertAll(listCommonUser);
       await TableLocation().upsertAll(commonLocation);
-      await AttendanceDatabase().batchCommit();
       debugPrint('-------Common Data Saved--------');
     } catch (e) {
-      AttendanceDatabase().batchRollback();
+      Get.defaultDialog(
+        title: 'Error',
+        titleStyle: TextStyles.title,
+        content: Text(
+          'Something Wrong, restarting app',
+          style: TextStyles.subTitle,
+        ),
+        confirm: ElevatedButton(
+          onPressed: () async {
+            await clearStorage();
+            Restart.restartApp();
+          },
+          child: Text(
+            'OK',
+            style: TextStyle(
+              fontFamily: robotoSemiBold,
+              color: MyColors.white,
+            ),
+          ),
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(kBorderRadiusNormal),
+              ),
+            ),
+          ),
+        ),
+      );
     }
   }
 
