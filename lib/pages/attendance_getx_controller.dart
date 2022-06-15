@@ -27,6 +27,7 @@ class AttendanceGetxController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initVariable();
     initFuture();
     // stream();
     Timer.periodic(const Duration(seconds: 1), (Timer t) => setCurrentTime());
