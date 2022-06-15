@@ -32,6 +32,14 @@ class AttendanceGetxController extends GetxController {
     Timer.periodic(const Duration(seconds: 1), (Timer t) => setCurrentTime());
   }
 
+  void initVariable() {
+    listAttendance.clear();
+    position(null);
+    officePosition(null);
+    markers.clear();
+    circles.clear();
+  }
+
   Future<void> initFuture() async {
     isLoading(true);
     user = await auth.getUserData();
