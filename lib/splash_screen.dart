@@ -14,13 +14,13 @@ class SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
       ));
       debugPrint('-------Save Common Data--------');
-      insertCommonData();
+      await insertCommonData();
       _getAppInfo();
       _checkLogin();
     });
