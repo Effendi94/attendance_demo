@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:attendance/core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -26,7 +25,6 @@ class GoogleMapComponent extends StatelessWidget {
         markers: controller.markers,
         circles: controller.circles,
         onMapCreated: (GoogleMapController controller) {
-          inspect(controller);
           gMapController.complete(controller);
         },
         myLocationEnabled: true,
